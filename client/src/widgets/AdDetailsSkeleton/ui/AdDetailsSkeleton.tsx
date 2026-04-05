@@ -11,7 +11,7 @@ export const AdDetailsSkeleton = () => {
                 height: "100vh",
                 maxWidth: '1399px',
                 mx: 'auto',
-                backgroundColor: theme.palette.background.default,
+                bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default
             }}
         >
             <Box sx={{ mb: 3 }}>

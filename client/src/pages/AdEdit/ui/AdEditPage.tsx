@@ -2,7 +2,7 @@ import { useState, type MouseEvent, useEffect } from 'react';
 import {
     Box, Container, Typography, Button, MenuItem,
     Stack, Popover, CircularProgress, Snackbar, Alert,
-    OutlinedInput, InputAdornment, IconButton, Divider, Select
+    OutlinedInput, InputAdornment, IconButton, Divider, Select, useTheme
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CachedIcon from '@mui/icons-material/Cached';
@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { itemsApi } from '../../../shared/api/itemsApi';
 import type { Category, ItemParams } from '../../../shared/api/types';
 import lampIcon from "../../../shared/assets/lamp-icon.svg"
+import {AdEditSkeleton} from "./AdEditSkeleton.tsx";
 
 // --- Вспомогательный компонент для AI-попапа ---
 interface AIPopoverProps {
@@ -24,42 +25,7 @@ interface AIPopoverProps {
     applyValue: string;
 }
 
-const AIPopover = ({ anchorEl, onClose, onApply, isLoading, hasError, content, applyValue }: AIPopoverProps) => (
-    <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={onClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        PaperProps={{ sx: { ml: 2, p: 2, width: 320, borderRadius: 2, boxShadow: 3 } }}
-    >
-        {isLoading ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1 }}>
-                <CircularProgress size={20} />
-                <Typography variant="body2">Выполняется запрос...</Typography>
-            </Box>
-        ) : hasError ? (
-            <Box sx={{ color: 'error.main' }}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>Произошла ошибка при запросе к AI</Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>Попробуйте повторить запрос или закройте уведомление.</Typography>
-                <Button size="small" variant="contained" color="error" onClick={onClose} sx={{ textTransform: 'none' }}>Закрыть</Button>
-            </Box>
-        ) : (
-            <Box>
-                <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>Ответ AI:</Typography>
-                <Typography variant="body2" sx={{ mb: 2, whiteSpace: 'pre-line' }}>{content}</Typography>
-                <Stack direction="row" spacing={1}>
-                    <Button size="small" variant="contained" onClick={() => { onApply(applyValue); onClose(); }} sx={{ textTransform: 'none', bgcolor: '#1890ff' }}>
-                        Применить
-                    </Button>
-                    <Button size="small" variant="outlined" color="inherit" onClick={onClose} sx={{ textTransform: 'none' }}>
-                        Скрыть
-                    </Button>
-                </Stack>
-            </Box>
-        )}
-    </Popover>
-);
+// Перемещен в компонент AdEditPage для использования theme
 
 // --- Вспомогательные функции ---
 function formatOptionLabel(value: string): string {
@@ -123,6 +89,87 @@ const aiButtonSx = {
 export const AdEditPage = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+    const theme = useTheme();
+
+    // Компонент для лейблов полей формы с темой
+    const CustomLabelWithTheme = ({ children, required, weight = 600 }: { children: React.ReactNode, required?: boolean, weight?: number }) => (
+        <Typography sx={{ fontSize: '14px', fontWeight: weight, color: theme.palette.text.primary, mb: 1, display: 'flex', alignItems: 'center' }}>
+            {required && <span style={{ color: '#ff4d4f', marginRight: '4px', fontSize: '14px' }}>*</span>}
+            {children}
+        </Typography>
+    );
+
+    // Динамические стили для инпутов
+    const getInputSx = () => ({
+        maxWidth: '456px',
+        height: '32px',
+        borderRadius: '6px',
+        backgroundColor: theme.palette.background.paper,
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.mode === 'dark' ? '#434343' : '#D9D9D9' },
+        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.mode === 'dark' ? '#595959' : '#D9D9D9' },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1890ff', borderWidth: '1px' },
+        '& .MuiOutlinedInput-input': { py: '9px', px: '14px', fontSize: '14px', color: theme.palette.text.primary },
+        '& .MuiOutlinedInput-input::placeholder': { color: theme.palette.text.secondary, opacity: 0.7 },
+    });
+
+    // Динамические стили для AI кнопок
+    const getAiButtonSx = () => ({
+        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 169, 64, 0.12)' : '#F9F1E6',
+        color: '#FFA940',
+        textTransform: 'none',
+        borderRadius: '8px',
+        boxShadow: 'none',
+        fontSize: '14px',
+        lineHeight: '22px',
+        fontWeight: 500,
+        px: 2.3,
+        flexShrink: 0,
+        '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 169, 64, 0.24)' : '#FDE6D1',
+            boxShadow: 'none',
+        },
+        '& .MuiButton-startIcon': {
+            marginRight: '6px'
+        }
+    });
+
+    // AI Popover компонент с темой
+    const AIPopover = ({ anchorEl, onClose, onApply, isLoading, hasError, content, applyValue }: AIPopoverProps) => (
+        <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={onClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            PaperProps={{ sx: { ml: 2, p: 2, width: 320, borderRadius: 2, boxShadow: 3, bgcolor: theme.palette.background.paper } }}
+        >
+            {isLoading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1 }}>
+                    <CircularProgress size={20} />
+                    <Typography variant="body2" sx={{ color: theme.palette.text.primary }}>Выполняется запрос...</Typography>
+                </Box>
+            ) : hasError ? (
+                <Box sx={{ color: 'error.main' }}>
+                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: theme.palette.text.primary }}>Произошла ошибка при запросе к AI</Typography>
+                    <Typography variant="body2" sx={{ mb: 2, color: theme.palette.text.secondary }}>Попробуйте повторить запрос или закройте уведомление.</Typography>
+                    <Button size="small" variant="contained" color="error" onClick={onClose} sx={{ textTransform: 'none' }}>Закрыть</Button>
+                </Box>
+            ) : (
+                <Box>
+                    <Typography variant="body2" sx={{ mb: 2, fontWeight: 500, color: theme.palette.text.primary }}>Ответ AI:</Typography>
+                    <Typography variant="body2" sx={{ mb: 2, whiteSpace: 'pre-line', color: theme.palette.text.secondary }}>{content}</Typography>
+                    <Stack direction="row" spacing={1}>
+                        <Button size="small" variant="contained" onClick={() => { onApply(applyValue); onClose(); }} sx={{ textTransform: 'none', bgcolor: '#1890ff' }}>
+                            Применить
+                        </Button>
+                        <Button size="small" variant="outlined" color="inherit" onClick={onClose} sx={{ textTransform: 'none' }}>
+                            Скрыть
+                        </Button>
+                    </Stack>
+                </Box>
+            )}
+        </Popover>
+    );
 
     const [formData, setFormData] = useState<{
         category: Category;
@@ -276,33 +323,31 @@ export const AdEditPage = () => {
 
     if (isLoading) {
         return (
-            <Container maxWidth={false} sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                <CircularProgress />
-            </Container>
+            <AdEditSkeleton />
         );
     }
 
     const paramFields = getParamFields();
 
     return (
-        <Box sx={{ bgcolor: '#ffffff', minHeight: '100vh', py: 2 }}>
+        <Box sx={{ bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default, minHeight: '100vh', py: 2 }}>
             <Container maxWidth={false} sx={{ maxWidth: '1399px', mx: 'auto', px: 2, fontFamily: 'Inter, sans-serif' }}>
 
                 <Box sx={{  }}>
-                    <Typography variant="h4" sx={{ fontWeight: 500, mb: 2.5, color: '#000000D9', fontSize: '30px', fontFamily: 'Roboto', LineHeight: '40px' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 500, mb: 2.5, color: theme.palette.text.primary, fontSize: '30px', fontFamily: 'Roboto', lineHeight: '40px' }}>
                         Редактирование объявления
                     </Typography>
 
                     {/* Категория */}
                     <Box sx={{mb: 2,}}>
-                        <CustomLabel weight={600}>Категория</CustomLabel>
+                        <CustomLabelWithTheme weight={600}>Категория</CustomLabelWithTheme>
                         <Select
                             fullWidth
                             size="small"
                             value={formData.category}
                             onChange={(e) => handleChange('category')({ target: { value: e.target.value } } as any)}
                             IconComponent={KeyboardArrowDownIcon}
-                            sx={inputSx}
+                            sx={getInputSx()}
                         >
                             <MenuItem value="electronics">Электроника</MenuItem>
                             <MenuItem value="auto">Авто</MenuItem>
@@ -310,11 +355,11 @@ export const AdEditPage = () => {
                         </Select>
                     </Box>
 
-                    <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2, borderColor: theme.palette.divider }} />
 
                     {/* Название */}
                     <Box sx={{mt: -1,}}>
-                        <CustomLabel required weight={600}>Название</CustomLabel>
+                        <CustomLabelWithTheme required weight={600}>Название</CustomLabelWithTheme>
                         <OutlinedInput
                             fullWidth
                             size="small"
@@ -322,13 +367,13 @@ export const AdEditPage = () => {
                             onChange={handleChange('title')}
                             error={errors.title}
                             endAdornment={renderClearButton('title', formData.title)}
-                            sx={inputSx}
+                            sx={getInputSx()}
                         />
                     </Box>
-                    <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2, borderColor: theme.palette.divider }} />
                     {/* Цена */}
                     <Box sx={{mt: -1,}}>
-                        <CustomLabel required weight={600}>Цена</CustomLabel>
+                        <CustomLabelWithTheme required weight={600}>Цена</CustomLabelWithTheme>
                         <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                             <OutlinedInput
                                 fullWidth
@@ -338,25 +383,25 @@ export const AdEditPage = () => {
                                 onChange={handleChange('price')}
                                 error={errors.price}
                                 endAdornment={renderClearButton('price', formData.price)}
-                                sx={inputSx}
+                                sx={getInputSx()}
                             />
                             <Button
                                 variant="contained"
                                 startIcon={<img src={lampIcon} alt={"Запрос к ии"} style={{marginLeft: "-4px", width: "18px"}}/>}
                                 onClick={(e) => handleAiRequest(setAiPriceAnchor, e)}
-                                sx={aiButtonSx}
+                                sx={getAiButtonSx()}
                             >
                                 Узнать рыночную стоимость
                             </Button>
                         </Box>
                     </Box>
 
-                    <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2, borderColor: theme.palette.divider }} />
 
                     {/* Характеристики */}
                     {paramFields.length > 0 && (
                         <Box sx={{mt: 1,}}>
-                            <Typography sx={{ mb: 1, fontWeight: 700, color: '#2b2b2b', fontSize: '16px' }}>
+                            <Typography sx={{ mb: 1, fontWeight: 700, color: theme.palette.text.primary, fontSize: '16px' }}>
                                 Характеристики
                             </Typography>
                             <Stack spacing={1}>
@@ -364,7 +409,7 @@ export const AdEditPage = () => {
                                     const options = getParamOptions(field);
                                     return (
                                         <Box key={field}>
-                                            <CustomLabel>{getParamLabel(field)}</CustomLabel>
+                                            <CustomLabelWithTheme weight={400}>{getParamLabel(field)}</CustomLabelWithTheme>
                                             {options ? (
                                                 <Select
                                                     fullWidth
@@ -373,7 +418,7 @@ export const AdEditPage = () => {
                                                     value={formData[field] || ''}
                                                     onChange={(e) => handleChange(field)({ target: { value: e.target.value } } as any)}
                                                     IconComponent={KeyboardArrowDownIcon}
-                                                    sx={inputSx}
+                                                    sx={getInputSx()}
                                                 >
                                                     {options.map(opt => (
                                                         <MenuItem key={opt} value={opt}>{formatOptionLabel(opt)}</MenuItem>
@@ -387,7 +432,7 @@ export const AdEditPage = () => {
                                                     value={formData[field] || ''}
                                                     onChange={handleChange(field)}
                                                     endAdornment={field !== 'condition' ? renderClearButton(field, formData[field]) : null}
-                                                    sx={inputSx}
+                                                    sx={getInputSx()}
                                                 />
                                             )}
                                         </Box>
@@ -397,11 +442,11 @@ export const AdEditPage = () => {
                         </Box>
                     )}
 
-                    <Divider sx={{ my: 2.5, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2.5, borderColor: theme.palette.divider }} />
 
                     {/* Описание */}
                     <Box sx={{ mt: 2, maxWidth: '942px' }}> {/* <-- Ограничиваем ширину контейнера, чтобы счетчик был под инпутом */}
-                        <Typography sx={{ mb: 1, fontWeight: 700, color: '#2b2b2b', fontSize: '16px' }}>
+                        <Typography sx={{ mb: 1, fontWeight: 700, color: theme.palette.text.primary, fontSize: '16px' }}>
                             Описание
                         </Typography>
                         <OutlinedInput
@@ -411,13 +456,13 @@ export const AdEditPage = () => {
                             value={formData.description}
                             onChange={handleChange('description')}
                             sx={{
-                                ...inputSx,
+                                ...getInputSx(),
                                 maxWidth: '100%', // Перебиваем maxWidth: '456px' из базового inputSx
-                                height: 'auto',   // <-- ВАЖНО: сбрасываем жесткую высоту '32px' из inputSx
+                                height: '32px',   // <-- ВАЖНО: сбрасываем жесткую высоту '32px' из inputSx
                                 padding: 0,
-                                color: '#000000',
                                 '& .MuiOutlinedInput-input': {
                                     padding: '8px 16px',
+                                    color: theme.palette.text.primary,
                                     resize: 'vertical' // Оставляем, если хочешь, чтобы пользователь мог тянуть инпут за уголок
                                 }
                             }}
@@ -427,11 +472,11 @@ export const AdEditPage = () => {
                                 variant="contained"
                                 startIcon={<LightbulbOutlinedIcon sx={{ fontSize: '18px !important' }} />}
                                 onClick={(e) => handleAiRequest(setAiDescAnchor, e)}
-                                sx={aiButtonSx}
+                                sx={getAiButtonSx()}
                             >
                                 Придумать описание
                             </Button>
-                            <Typography sx={{ fontSize: '13px', color: '#b3b3b3', mt: 0.5 }}>
+                            <Typography sx={{ fontSize: '13px', color: theme.palette.text.secondary, mt: 0.5 }}>
                                 {formData.description?.length || 0} / 1000
                             </Typography>
                         </Box>
@@ -447,7 +492,8 @@ export const AdEditPage = () => {
                                 bgcolor: '#1677ff', color: '#fff', textTransform: 'none',
                                 borderRadius: '6px', px: 3, py: 1, fontSize: '15px',
                                 fontWeight: 500, boxShadow: 'none',
-                                '&:hover': { bgcolor: '#0958d9', boxShadow: 'none' }
+                                '&:hover': { bgcolor: '#0958d9', boxShadow: 'none' },
+                                '&:disabled': { bgcolor: theme.palette.action.disabledBackground, color: theme.palette.action.disabled }
                             }}
                         >
                             {isSaving ? <CircularProgress size={24} color="inherit" /> : 'Сохранить'}
@@ -457,10 +503,10 @@ export const AdEditPage = () => {
                             onClick={() => navigate('/')}
                             disabled={isSaving}
                             sx={{
-                                bgcolor: '#dbdbdb', color: '#4a4a4a', textTransform: 'none',
+                                bgcolor: theme.palette.action.disabledBackground, color: theme.palette.text.secondary, textTransform: 'none',
                                 borderRadius: '6px', px: 3, py: 1, fontSize: '15px',
                                 fontWeight: 500, boxShadow: 'none',
-                                '&:hover': { bgcolor: '#c4c4c4', boxShadow: 'none' }
+                                '&:hover': { bgcolor: theme.palette.action.hover, boxShadow: 'none' }
                             }}
                         >
                             Отменить
