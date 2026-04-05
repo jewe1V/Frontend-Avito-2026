@@ -11,6 +11,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useNavigate, useParams } from 'react-router-dom';
 import { itemsApi } from '../../../shared/api/itemsApi';
 import type { Category, ItemParams } from '../../../shared/api/types';
+import lampIcon from "../../../shared/assets/lamp-icon.svg"
 
 // --- Вспомогательный компонент для AI-попапа ---
 interface AIPopoverProps {
@@ -87,6 +88,8 @@ const CustomLabel = ({ children, required }: { children: React.ReactNode, requir
 
 // Общие стили
 const inputSx = {
+    maxWidth: '456px',
+    height: '32px',
     borderRadius: '6px',
     backgroundColor: '#fff',
     '& .MuiOutlinedInput-notchedOutline': { borderColor: '#D9D9D9' },
@@ -96,15 +99,16 @@ const inputSx = {
 };
 
 const aiButtonSx = {
-    backgroundColor: '#FCF3E8',
-    color: '#F49342',
+    backgroundColor: '#F9F1E6',
+    color: '#FFA940',
     textTransform: 'none',
-    borderRadius: '6px',
+    borderRadius: '8px',
     boxShadow: 'none',
     fontSize: '14px',
+    lineHeight: '22px',
     fontWeight: 500,
-    px: 2,
-    py: '9px',
+    px: 2.3,
+
     flexShrink: 0,
     '&:hover': {
         backgroundColor: '#FDE6D1',
@@ -168,7 +172,7 @@ export const AdEditPage = () => {
         switch (formData.category) {
             case 'auto': return [...baseParams, 'yearOfManufacture', 'transmission', 'mileage', 'enginePower'];
             case 'real_estate': return ['type', 'address', 'area', 'floor'];
-            case 'electronics': return [...baseParams, 'type', 'condition', 'color'];
+            case 'electronics': return ['type', ...baseParams, 'condition', 'color'];
             default: return [];
         }
     };
@@ -281,16 +285,16 @@ export const AdEditPage = () => {
     const paramFields = getParamFields();
 
     return (
-        <Box sx={{ bgcolor: '#ffffff', minHeight: '100vh', py: 5 }}>
-            <Container maxWidth={false} sx={{ maxWidth: '1399px', mx: 'auto', px: { xs: 2, md: 5 }, fontFamily: 'Inter, sans-serif' }}>
+        <Box sx={{ bgcolor: '#ffffff', minHeight: '100vh', py: 2 }}>
+            <Container maxWidth={false} sx={{ maxWidth: '1399px', mx: 'auto', px: 2, fontFamily: 'Inter, sans-serif' }}>
 
-                <Box sx={{ maxWidth: '456px' }}>
-                    <Typography variant="h4" sx={{ fontWeight: 500, mb: 4, color: '#000000D9', fontSize: '30px', fontFamily: 'Roboto', LineHeight: '40px' }}>
+                <Box sx={{  }}>
+                    <Typography variant="h4" sx={{ fontWeight: 500, mb: 2.5, color: '#000000D9', fontSize: '30px', fontFamily: 'Roboto', LineHeight: '40px' }}>
                         Редактирование объявления
                     </Typography>
 
                     {/* Категория */}
-                    <Box sx={{ mb: 2}}>
+                    <Box sx={{mb: 2,}}>
                         <CustomLabel>Категория</CustomLabel>
                         <Select
                             fullWidth
@@ -306,10 +310,10 @@ export const AdEditPage = () => {
                         </Select>
                     </Box>
 
-                    <Divider sx={{ my: 4, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
 
                     {/* Название */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{mt: -1,}}>
                         <CustomLabel required>Название</CustomLabel>
                         <OutlinedInput
                             fullWidth
@@ -321,9 +325,9 @@ export const AdEditPage = () => {
                             sx={inputSx}
                         />
                     </Box>
-
+                    <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
                     {/* Цена */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{mt: -1,}}>
                         <CustomLabel required>Цена</CustomLabel>
                         <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                             <OutlinedInput
@@ -338,31 +342,29 @@ export const AdEditPage = () => {
                             />
                             <Button
                                 variant="contained"
-                                startIcon={<CachedIcon sx={{ fontSize: '18px !important' }} />}
+                                startIcon={<img src={lampIcon} alt={"Запрос к ии"} style={{marginLeft: "-4px", width: "18px"}}/>}
                                 onClick={(e) => handleAiRequest(setAiPriceAnchor, e)}
                                 sx={aiButtonSx}
                             >
-                                Повторить запрос
+                                Узнать рыночную стоимость
                             </Button>
                         </Box>
                     </Box>
 
-                    <Divider sx={{ my: 4, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
 
                     {/* Характеристики */}
                     {paramFields.length > 0 && (
-                        <Box sx={{ mb: 3 }}>
-                            <Typography sx={{ mb: 3, fontWeight: 700, color: '#2b2b2b', fontSize: '16px' }}>
+                        <Box sx={{mt: 1,}}>
+                            <Typography sx={{ mb: 1, fontWeight: 700, color: '#2b2b2b', fontSize: '16px' }}>
                                 Характеристики
                             </Typography>
-                            <Stack spacing={3}>
+                            <Stack spacing={1}>
                                 {paramFields.map(field => {
                                     const options = getParamOptions(field);
-                                    const isRequired = field === 'type'; // В макете у 'Тип' стоит звездочка
-
                                     return (
                                         <Box key={field}>
-                                            <CustomLabel required={isRequired}>{getParamLabel(field)}</CustomLabel>
+                                            <CustomLabel>{getParamLabel(field)}</CustomLabel>
                                             {options ? (
                                                 <Select
                                                     fullWidth
@@ -395,23 +397,29 @@ export const AdEditPage = () => {
                         </Box>
                     )}
 
-                    <Divider sx={{ my: 4, borderColor: '#f2f2f2' }} />
+                    <Divider sx={{ my: 2.5, borderColor: '#f2f2f2' }} />
 
                     {/* Описание */}
-                    <Box sx={{ mb: 4 }}>
-                        <Typography sx={{ mb: 2, fontWeight: 700, color: '#2b2b2b', fontSize: '16px' }}>
+                    <Box sx={{ mt: 2, maxWidth: '942px' }}> {/* <-- Ограничиваем ширину контейнера, чтобы счетчик был под инпутом */}
+                        <Typography sx={{ mb: 1, fontWeight: 700, color: '#2b2b2b', fontSize: '16px' }}>
                             Описание
                         </Typography>
                         <OutlinedInput
                             fullWidth
                             multiline
-                            rows={4}
+                            minRows={1}
                             value={formData.description}
                             onChange={handleChange('description')}
                             sx={{
                                 ...inputSx,
+                                maxWidth: '100%', // Перебиваем maxWidth: '456px' из базового inputSx
+                                height: 'auto',   // <-- ВАЖНО: сбрасываем жесткую высоту '32px' из inputSx
                                 padding: 0,
-                                '& .MuiOutlinedInput-input': { padding: '12px 14px', resize: 'vertical' }
+                                color: '#000000',
+                                '& .MuiOutlinedInput-input': {
+                                    padding: '8px 16px',
+                                    resize: 'vertical' // Оставляем, если хочешь, чтобы пользователь мог тянуть инпут за уголок
+                                }
                             }}
                         />
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mt: 1.5 }}>
@@ -430,7 +438,7 @@ export const AdEditPage = () => {
                     </Box>
 
                     {/* Кнопки действий */}
-                    <Stack direction="row" spacing={2} sx={{ pt: 2, pb: 4 }}>
+                    <Stack direction="row" spacing={2} sx={{ mt: 4, mb: 4}}>
                         <Button
                             variant="contained"
                             onClick={handleSave}
