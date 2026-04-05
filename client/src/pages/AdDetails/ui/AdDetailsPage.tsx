@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useGetAd } from '../model/useGetAd';
+import { useGetAd } from '../model';
 import { AdDetailsView } from './AdDetailsView';
 import {useEffect} from "react";
 export const AdDetailsPage = () => {

@@ -1,4 +1,4 @@
-import { useAdEditForm } from '../model/useAdEditForm';
+import { useAdEditForm } from '../model';
 import { AdEditView } from './AdEditView';
 import {useEffect} from 'react';
 
