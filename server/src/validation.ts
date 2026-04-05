@@ -4,6 +4,7 @@ import { ItemSortColumn, SortDirection } from './types.ts';
 
 const AutoTransmissionSchema = z.enum(['automatic', 'manual']);
 
+// Обязательные схемы для видимости объявления (без .partial())
 export const AutoItemParamsSchema = z.strictObject({
   brand: z.string().nonempty(),
   model: z.string().nonempty(),
@@ -33,6 +34,49 @@ export const ElectronicsEstateItemParamsSchema = z.strictObject({
   color: z.string().nonempty(),
 });
 
+// Минимально требуемые поля для каждой категории
+export const AutoItemParamsMinimalSchema = z.strictObject({
+  brand: z.string().nonempty().optional(),
+  model: z.string().nonempty().optional(),
+  yearOfManufacture: z.number().int().positive().optional(),
+  transmission: AutoTransmissionSchema.optional(),
+  mileage: z.number().positive().optional(),
+  enginePower: z.number().int().positive().optional(),
+}).refine(
+  (data) => {
+    const hasAtLeastOne = Object.values(data).some(val => val !== undefined && val !== null && val !== '');
+    return hasAtLeastOne;
+  },
+  { message: 'At least one field must be filled' }
+);
+
+export const RealEstateItemParamsMinimalSchema = z.strictObject({
+  type: RealEstateTypeSchema.optional(),
+  address: z.string().nonempty().optional(),
+  area: z.number().positive().optional(),
+  floor: z.number().int().positive().optional(),
+}).refine(
+  (data) => {
+    const hasAtLeastOne = Object.values(data).some(val => val !== undefined && val !== null && val !== '');
+    return hasAtLeastOne;
+  },
+  { message: 'At least one field must be filled' }
+);
+
+export const ElectronicsEstateItemParamsMinimalSchema = z.strictObject({
+  type: ElectronicsTypeSchema.optional(),
+  brand: z.string().nonempty().optional(),
+  model: z.string().nonempty().optional(),
+  condition: ElectronicsConditionSchema.optional(),
+  color: z.string().nonempty().optional(),
+}).refine(
+  (data) => {
+    const hasAtLeastOne = Object.values(data).some(val => val !== undefined && val !== null && val !== '');
+    return hasAtLeastOne;
+  },
+  { message: 'At least one field must be filled' }
+);
+
 const CategorySchema = z.enum(Object.values(ITEM_CATEGORIES));
 
 export const ItemsGetInQuerySchema = z.object({
@@ -41,7 +85,7 @@ export const ItemsGetInQuerySchema = z.object({
     .string()
     .optional()
     .transform(val => (val ? parseInt(val, 10) : undefined))
-    .pipe(z.number().int().positive().optional().default(10)),
+    .pipe(z.number().int().positive().optional().default(20)),
   skip: z
     .string()
     .optional()

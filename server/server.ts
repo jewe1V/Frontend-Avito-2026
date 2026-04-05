@@ -4,7 +4,7 @@ import items from 'data/items.json' with { type: 'json' };
 import { Item } from 'src/types.ts';
 import { ItemsGetInQuerySchema, ItemUpdateInSchema } from 'src/validation.ts';
 import { treeifyError, ZodError } from 'zod';
-import { doesItemNeedRevision } from './src/utils.ts';
+import { doesItemNeedRevision, getMissingFields } from './src/utils.ts';
 
 const ITEMS = items as Item[];
 
@@ -52,6 +52,7 @@ fastify.get<ItemGetRequest>('/items/:id', (request, reply) => {
   return {
     ...item,
     needsRevision: doesItemNeedRevision(item),
+    missingFields: getMissingFields(item),
   };
 });
 
@@ -104,6 +105,7 @@ fastify.get<ItemsGetRequest>('/items', request => {
       })
       .slice(skip, skip + limit)
       .map(item => ({
+        id: item.id,
         category: item.category,
         title: item.title,
         price: item.price,

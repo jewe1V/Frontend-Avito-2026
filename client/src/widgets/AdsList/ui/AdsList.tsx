@@ -1,54 +1,152 @@
-import { Stack, Box, Grid } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Импортируем хук навигации
+import { Stack, Box, CircularProgress, Typography, Pagination, styled } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
 import { AdCardRow } from '../../../entities/ad/ui/AdCardRow';
 import { AdCardGrid } from '../../../entities/ad/ui/AdCardGrid';
 
-const mockItems = [
-    { id: '1', category: 'electronics', title: 'Наушники', price: 2990, needsRevision: false },
-    { id: '2', category: 'auto', title: 'Volkswagen Polo', price: 1100000, needsRevision: true },
-    { id: '3', category: 'real_estate', title: 'Студия, 25м²', price: 15000000, needsRevision: false },
-];
+// Стилизуем пагинацию в точности как на макете
+const StyledPagination = styled(Pagination)(({ theme }) => ({
+    '& .MuiPaginationItem-root': {
+        borderRadius: '8px', // Скругленные углы
+        border: '1px solid #d9d9d9', // Серая рамка по умолчанию
+        backgroundColor: '#fff',
+        color: '#333',
+        margin: '0 4px',
+        fontWeight: 500,
+        fontSize: '16px',
+        height: '40px',
+        minWidth: '40px',
+        // Состояние при наведении
+        '&:hover': {
+            backgroundColor: '#f5f5f5',
+            borderColor: '#1677ff',
+            color: '#1677ff',
+        },
+        // Активное состояние (выбранная страница)
+        '&.Mui-selected': {
+            backgroundColor: '#fff', // Белый фон, а не синий
+            borderColor: '#1677ff', // Синяя рамка
+            color: '#1677ff',       // Синий текст
+            '&:hover': {
+                backgroundColor: '#fff',
+            },
+        },
+        // Иконки < и >
+        '&.MuiPaginationItem-previousNext': {
+            color: '#999',
+            '&:hover': {
+                borderColor: '#1677ff',
+                color: '#1677ff',
+            }
+        },
+    },
+}));
 
 export const AdsList = () => {
     const viewMode = useAdsStore((state) => state.viewMode);
+    const ads = useAdsStore((state) => state.ads);
+    const loading = useAdsStore((state) => state.loading);
+    const error = useAdsStore((state) => state.error);
+    const fetchAds = useAdsStore((state) => state.fetchAds);
+    const filters = useAdsStore((state) => state.filters);
+    const setFilters = useAdsStore((state) => state.setFilters);
+    const total = useAdsStore((state) => state.total);
     const navigate = useNavigate();
 
-    const items = mockItems as any[];
+    useEffect(() => {
+        fetchAds();
+    }, [fetchAds]);
 
-    // Общий обработчик клика
-    const handleCardClick = (id: string) => {
-        navigate(`/ads/${id}`); // Переходим на страницу деталей по ID
+    const handleCardClick = (id: number) => {
+        navigate(`/ads/${id}`);
     };
 
-    if (viewMode === 'grid') {
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+        setFilters({ page });
+    };
+
+    const limit = filters.limit || 20;
+    const totalPages = Math.ceil(total / limit);
+
+    if (loading) {
         return (
-            <Grid container spacing={2} sx={{ mb: 4 }}>
-                {items.map((item) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
-                        <Box
-                            onClick={() => handleCardClick(item.id)}
-                            sx={{ cursor: 'pointer', height: '100%' }}
-                        >
-                            <AdCardGrid item={item} />
-                        </Box>
-                    </Grid>
-                ))}
-            </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4, height: '100%' }}>
+                <CircularProgress />
+            </Box>
         );
     }
 
-    return (
-        <Stack spacing={2} sx={{ mb: 4 }}>
-            {items.map((item) => (
-                <Box
-                    key={item.id}
-                    onClick={() => handleCardClick(item.id)}
-                    sx={{ cursor: 'pointer' }}
-                >
-                    <AdCardRow item={item} />
+    if (error) {
+        return (
+            <Typography color="error" sx={{ py: 2 }}>
+                Ошибка при загрузке объявлений: {error}
+            </Typography>
+        );
+    }
+
+    if (ads.length === 0) {
+        return (
+            <Typography color="text.secondary" sx={{ py: 2 }}>
+                Объявления не найдены
+            </Typography>
+        );
+    }
+
+    // Функция для рендера самого списка (чтобы не дублировать код обертки)
+    const renderContent = () => {
+        if (viewMode === 'grid') {
+            return (
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 2 }}>
+                    {ads.map((item) => (
+                        <Box key={item.id} onClick={() => handleCardClick(item.id)} sx={{ cursor: 'pointer', height: '100%' }}>
+                            <AdCardGrid item={item} />
+                        </Box>
+                    ))}
                 </Box>
-            ))}
-        </Stack>
+            );
+        }
+
+        return (
+            <Stack spacing={2}>
+                {ads.map((item) => (
+                    <Box key={item.id} onClick={() => handleCardClick(item.id)} sx={{ cursor: 'pointer' }}>
+                        <AdCardRow item={item} />
+                    </Box>
+                ))}
+            </Stack>
+        );
+    };
+
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+            {/* 1. Блок со скроллом */}
+            <Box sx={{
+                flexGrow: 1,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                pr: 1,
+                mb: 2,
+                '&::-webkit-scrollbar': { width: '4px' },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: '#848388', borderRadius: '2px' }
+            }}>
+                {renderContent()}
+            </Box>
+
+            {/* 2. Фиксированная пагинация внизу */}
+            {totalPages > 1 && (
+                <Box sx={{ flexShrink: 0, display: 'flex', justifyContent: 'flex-start', pt: 1, pb: 2 }}>
+                    <StyledPagination
+                        count={totalPages}
+                        page={filters.page || 1}
+                        onChange={handlePageChange}
+                        variant="outlined"
+                        shape="rounded"
+                    />
+                </Box>
+            )}
+
+        </Box>
     );
 };

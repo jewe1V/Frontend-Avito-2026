@@ -16,7 +16,7 @@ function App() {
                 paper: isDarkMode ? '#1e1e1e' : '#ffffff',
             },
         },
-        typography: { fontFamily: 'Inter, sans-serif' },
+        typography: { fontFamily: 'Inter, Roboto, sans-serif' },
     }), [isDarkMode]);
 
   return (
@@ -24,11 +24,8 @@ function App() {
           <CssBaseline />
           <Routes>
             <Route path="/" element={<AdsPage />} />
-            {/* Маршрут для детальной страницы товара, когда она будет готова */}
+            <Route path="/ads/:id/edit" element={<AdEditPage />} />
             <Route path="/ads/:id" element={<AdDetailsPage />} />
-              <Route path="/ads/:id" element={<AdDetailsPage />} />
-              <Route path="/ads/create" element={<AdEditPage />} />
-              <Route path="/ads/:id/edit" element={<AdEditPage />} />
           </Routes>
       </ThemeProvider>
   );

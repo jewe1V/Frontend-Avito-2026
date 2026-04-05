@@ -1,34 +1,55 @@
 import {Box, Container, Typography} from '@mui/material';
+import { useEffect } from 'react';
+import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
 
 import { Sidebar } from '../../../widgets/AdsFilter/ui/Sidebar';
 import { AdsToolbar } from '../../../widgets/AdsToolbar/ui/AdsToolbar';
 import { AdsList } from '../../../widgets/AdsList/ui/AdsList';
 
 export const AdsPage = () => {
+    const total = useAdsStore((state) => state.total);
 
+    useEffect(() => {
+        document.title = "Мои объявления";
+    }, []);
 
     return (
-        <Container sx={{ py: 4 }}>
-            {/* Шапка страницы */}
-            <Box sx={{ mb: 3, textAlign: 'left' }}>
-                <Typography variant="h5" sx={{ fontWeight: 500 }}>
-                    Мои объявления
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 400, marginTop: -.5 }}>
-                    42 объявления
-                </Typography>
+        <Container
+            maxWidth={false}
+            sx={{
+                maxWidth: '1399px',
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                py: 2,
+                px: 0,
+                boxSizing: 'border-box'
+            }}
+        >
+            <Box sx={{ flexShrink: 0 }}>
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                        Мои объявления
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        {total} объявлений
+                    </Typography>
+                </Box>
+                <AdsToolbar />
             </Box>
 
-            {/* Сборка виджетов (Layout) */}
-            <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
-                {/* Сайдбар — теперь без пропсов, он сам "умный" */}
-                <Box sx={{ width: 280, flexShrink: 0 }}>
+            <Box sx={{
+                display: 'flex',
+                gap: 2.5,
+                flexGrow: 1,
+                minHeight: 0,
+                mt: 0.5
+            }}>
+                <Box sx={{ flexShrink: 0 }}>
                     <Sidebar />
                 </Box>
 
-                {/* Основной контент */}
-                <Box sx={{ flexGrow: 1 }}>
-                    <AdsToolbar />
+                <Box sx={{ flexGrow: 1, minWidth: 0, height: '100%' }}>
                     <AdsList />
                 </Box>
             </Box>
