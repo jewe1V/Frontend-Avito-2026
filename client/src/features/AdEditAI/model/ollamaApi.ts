@@ -96,7 +96,7 @@ ${formDataStr}
             fullResponse += json.response;
             onStream(json.response);
           }
-        } catch (e) {
+        } catch {
           console.warn('Не удалось распарсить JSON строку:', line);
         }
       }
@@ -110,7 +110,7 @@ ${formDataStr}
           fullResponse += json.response;
           onStream(json.response);
         }
-      } catch (e) {
+      } catch {
         console.warn('Не удалось распарсить финальный буфер:', buffer);
       }
     }
@@ -180,7 +180,7 @@ ${formDataStr}
             fullResponse += json.response;
             onStream(json.response);
           }
-        } catch (e) {
+        } catch {
           console.warn('Не удалось распарсить JSON строку:', line);
         }
       }
@@ -194,8 +194,8 @@ ${formDataStr}
           fullResponse += json.response;
           onStream(json.response);
         }
-      } catch (e) {
-        console.warn('Не удалось распарсить финальный буфер:', buffer);
+      } catch {
+        console.warn('Не удалось распарсить финальный буфер (generateDescription):', buffer);
       }
     }
 
