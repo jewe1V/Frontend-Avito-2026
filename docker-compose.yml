@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./server
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    networks:
+      - avito-network
+
+  frontend:
+    build: ./client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - avito-network
+
+networks:
+  avito-network:
+    driver: bridge
