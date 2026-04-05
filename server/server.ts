@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-
+import cors from '@fastify/cors';
 import items from 'data/items.json' with { type: 'json' };
 import { Item } from 'src/types.ts';
 import { ItemsGetInQuerySchema, ItemUpdateInSchema } from 'src/validation.ts';
@@ -18,9 +18,10 @@ fastify.use((_, __, next) =>
   new Promise(res => setTimeout(res, 300 + Math.random() * 700)).then(next),
 );
 
-fastify.use((_, reply, next) => {
-  reply.setHeader('Access-Control-Allow-Origin', '*');
-  next();
+await fastify.register(cors, {
+  origin: '*',
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
 });
 
 fastify.options('/items/:id', (request, reply) => {

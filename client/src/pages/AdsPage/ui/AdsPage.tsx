@@ -1,4 +1,4 @@
-import {Box, Container, Typography} from '@mui/material';
+import {Box, Container, Typography, useTheme} from '@mui/material';
 import { useEffect } from 'react';
 import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
 import { Sidebar } from '../../../widgets/AdsFilter/ui/Sidebar';
@@ -7,12 +7,17 @@ import { AdsList } from '../../../widgets/AdsList';
 
 export const AdsPage = () => {
     const total = useAdsStore((state) => state.total);
-
+    const theme = useTheme();
     useEffect(() => {
         document.title = "Мои объявления";
     }, []);
 
     return (
+        <Box sx={{
+            bgcolor: theme.palette.mode === 'light' ? '#F7F5F8' : theme.palette.background.default,
+            minHeight: '100vh',
+            width: '100%'
+        }}>
         <Container
             maxWidth={false}
             sx={{
@@ -53,5 +58,6 @@ export const AdsPage = () => {
                 </Box>
             </Box>
         </Container>
+        </Box>
     );
 };

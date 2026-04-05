@@ -164,7 +164,7 @@ export const useAdEditForm = () => {
         return;
       }
 
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate(`/ads/${id}`), 500);
     } catch (error) {
       console.error('Ошибка при сохранении:', error);
       const errorMessage = error instanceof Error ? error.message : 'Ошибка при сохранении';

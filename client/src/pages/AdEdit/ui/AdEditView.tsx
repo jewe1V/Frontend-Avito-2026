@@ -1,4 +1,4 @@
-import { Container, Typography, Snackbar, Alert, useTheme, Box } from '@mui/material';
+import { Container, Typography, Snackbar, Alert, useTheme } from '@mui/material';
 import { AdEditSkeleton } from './AdEditSkeleton';
 import { AdEditForm } from '../../../widgets/AdEditForm';
 import { AIPopover } from '../../../widgets/AdEditAI';
@@ -97,12 +97,13 @@ export const AdEditView = ({
 
   return (
     <>
-      <Box sx={{
+      <Container maxWidth={false} sx={{
+        maxWidth: '1103px',
         bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default,
         minHeight: '100vh',
         py: 2
       }}>
-        <Container maxWidth={false} sx={{ maxWidth: '1399px', mx: 'auto', px: 2, fontFamily: 'Inter, sans-serif' }}>
+        <Container maxWidth={false} sx={{ maxWidth: '1399px', mx: 'auto', fontFamily: 'Inter, sans-serif' }}>
           <Typography variant="h4" sx={{
             fontWeight: 500,
             mb: 2.5,
@@ -129,7 +130,7 @@ export const AdEditView = ({
 
           <AdEditActions isSaving={isSaving} onSave={onSave} />
         </Container>
-      </Box>
+      </Container>
 
       <AIPopover
         anchorEl={aiPriceAnchor}

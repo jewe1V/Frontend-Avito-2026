@@ -224,7 +224,7 @@ export const AdEditForm = ({
                                 value={value || ''}
                                 onChange={(e) => onFieldChange(field)({ target: { value: e.target.value } } as React.ChangeEvent<HTMLInputElement>)}
                                 IconComponent={KeyboardArrowDownIcon}
-                                sx={getInputSx(value, false)}
+                                sx={getInputSx(value as string, false)}
                             >
                               {options.map(opt => (
                                   <MenuItem key={opt} value={opt}>{formatOptionLabel(opt)}</MenuItem>
@@ -238,7 +238,7 @@ export const AdEditForm = ({
                                 value={value || ''}
                                 onChange={onFieldChange(field)}
                                 endAdornment={renderClearButton(field, value)}
-                                sx={getInputSx(value, false)}
+                                sx={getInputSx(value as string, false)}
                             />
                         )}
                       </Box>

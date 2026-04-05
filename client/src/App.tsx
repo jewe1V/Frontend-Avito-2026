@@ -12,7 +12,7 @@ function App() {
         palette: {
             mode: isDarkMode ? 'dark' : 'light',
             background: {
-                default: isDarkMode ? '#121212' : '#F7F5F8',
+                default: isDarkMode ? '#121212' : '#ffffff',
                 paper: isDarkMode ? '#1e1e1e' : '#ffffff',
             },
         },

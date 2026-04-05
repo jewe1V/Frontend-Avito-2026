@@ -1,4 +1,4 @@
-import {Box, Paper, Typography, useTheme, Grid} from '@mui/material';
+import {Box, Paper, Typography, useTheme} from '@mui/material';
 import type { Item } from '../../../shared/api/types';
 import placeholder from "../../../shared/assets/placeholder.png";
 import {formatLabel, formatValue} from "../../../utils.ts";
@@ -19,17 +19,25 @@ export const AdDetailsContent = ({ ad }: AdDetailsContentProps) => {
         }));
 
     return (
-        <Grid container spacing={"20px"} alignItems="flex-start">
-            <Grid>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: "20px",
+            alignItems: 'flex-start'
+        }}>
+            <Box sx={{
+                width: { xs: '100%', md: '480px' },
+                flexShrink: 0
+            }}>
                 <Box sx={{
-                    width: '480px',
+                    width: '100%',
                     height: '360px',
                     backgroundColor: theme.palette.action.hover,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '12px',
-                    mb: 4,
+                    mb: 3,
                     overflow: 'hidden'
                 }}>
                     <img src={placeholder} alt="placeholder" style={{
@@ -39,12 +47,18 @@ export const AdDetailsContent = ({ ad }: AdDetailsContentProps) => {
                         filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
                     }} />
                 </Box>
+
                 <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: theme.palette.text.primary }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.primary }}>
                         Описание
                     </Typography>
                     {ad.description ? (
-                        <Typography variant="body1" sx={{ whiteSpace: 'pre-line', color: theme.palette.text.primary, lineHeight: 1.6 }}>
+                        <Typography variant="body1" sx={{
+                            whiteSpace: 'pre-line',
+                            color: theme.palette.text.primary,
+                            lineHeight: 1.6,
+                            wordBreak: 'break-word' // Предотвращает распирание блока длинными словами
+                        }}>
                             {ad.description}
                         </Typography>
                     ) : (
@@ -53,10 +67,10 @@ export const AdDetailsContent = ({ ad }: AdDetailsContentProps) => {
                         </Typography>
                     )}
                 </Box>
-            </Grid>
+            </Box>
 
-            <Grid size={{ xs: 12, md: 5 }}>
-                <Box sx={{ maxWidth: '400px' }}>
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Box sx={{ width: '512px' }}>
                     {ad.needsRevision && ad.missingFields && ad.missingFields.length > 0 && (
                         <Paper sx={{
                             px: "20px",
@@ -111,7 +125,7 @@ export const AdDetailsContent = ({ ad }: AdDetailsContentProps) => {
                         </Box>
                     )}
                 </Box>
-            </Grid>
-        </Grid>
+            </Box>
+        </Box>
     );
 };

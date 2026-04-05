@@ -4,9 +4,9 @@ export const AdEditSkeleton = () => {
     const theme = useTheme();
 
     return (
-        <Box sx={{ bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default, minHeight: '100vh', py: 2 }}>
-            <Container maxWidth={false} sx={{ maxWidth: '1399px', mx: 'auto', px: 2, fontFamily: 'Inter, sans-serif' }}>
-                <Box>
+        <>
+            <Container maxWidth={false} sx={{ maxWidth: '1103px', mx: 'auto', py: 2, fontFamily: 'Inter, sans-serif' }}>
+                <Box sx={{px: 3,}}>
                     {/* Заголовок */}
                     <Skeleton variant="text" width="300px" height={40} sx={{ mb: 2.5 }} />
 
@@ -69,6 +69,6 @@ export const AdEditSkeleton = () => {
                     </Stack>
                 </Box>
             </Container>
-        </Box>
+        </>
     );
 };

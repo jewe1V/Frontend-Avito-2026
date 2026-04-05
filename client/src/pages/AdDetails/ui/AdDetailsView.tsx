@@ -31,27 +31,33 @@ export const AdDetailsView = ({ id, ad, loading, error }: AdDetailsViewProps) =>
   }
 
   return (
-    <Container
-      maxWidth={false}
-      sx={{
-        py: 4,
-        minHeight: '100vh',
-        maxWidth: '1399px',
-        mx: 'auto',
-        bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default
-      }}
-    >
-      <Box sx={{ mb: 3 }}>
-        <AdDetailsHeader title={ad.title} price={ad.price} />
+      <Box sx={{
+          bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default,
+          minHeight: '100vh',
+          width: '100%'
+      }}>
+        <Container
+          maxWidth={false}
+          sx={{
+            py: 4,
+            minHeight: '100vh',
+            maxWidth: '1399px',
+            mx: 'auto',
+            bgcolor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default
+          }}
+        >
+          <Box sx={{ mb: 3 }}>
+            <AdDetailsHeader title={ad.title} price={ad.price} />
 
-        <Box sx={{ mt: 2 }}>
-          <AdDetailsActions ad={ad} id={id!} />
-        </Box>
+            <Box sx={{ mt: 2 }}>
+              <AdDetailsActions ad={ad} id={id!} />
+            </Box>
+          </Box>
+
+          <Divider sx={{ mb: 4, borderColor: theme.palette.divider }} />
+
+          <AdDetailsContent ad={ad} />
+        </Container>
       </Box>
-
-      <Divider sx={{ mb: 4, borderColor: theme.palette.divider }} />
-
-      <AdDetailsContent ad={ad} />
-    </Container>
   );
 };
