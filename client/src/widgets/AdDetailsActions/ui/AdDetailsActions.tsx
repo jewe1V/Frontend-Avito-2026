@@ -35,7 +35,7 @@ export const AdDetailsActions = ({ ad, id }: AdDetailsActionsProps) => {
                     py: "6px",
                     fontWeight: 400,
                     fontSize: "16px",
-                    backgroundColor: theme.palette.primary.main,
+                    backgroundColor: theme.palette.mode === 'light' ? '#1890FF' : '#7eaaed',
                     gap: "8px",
                 }}
                 onClick={() => navigate(`/ads/${id}/edit`)}

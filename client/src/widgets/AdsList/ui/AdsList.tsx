@@ -5,11 +5,10 @@ import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
 import { AdCardRow } from '../../../entities/ad/ui/AdCardRow';
 import { AdCardGrid } from '../../../entities/ad/ui/AdCardGrid';
 
-// Стилизуем пагинацию в точности как на макете
-const StyledPagination = styled(Pagination)(({ theme }) => ({
+const StyledPagination = styled(Pagination)(() => ({
     '& .MuiPaginationItem-root': {
-        borderRadius: '8px', // Скругленные углы
-        border: '1px solid #d9d9d9', // Серая рамка по умолчанию
+        borderRadius: '8px',
+        border: '1px solid #d9d9d9',
         backgroundColor: '#fff',
         color: '#333',
         margin: '0 4px',
@@ -17,17 +16,15 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
         fontSize: '16px',
         height: '40px',
         minWidth: '40px',
-        // Состояние при наведении
         '&:hover': {
             backgroundColor: '#f5f5f5',
             borderColor: '#1677ff',
             color: '#1677ff',
         },
-        // Активное состояние (выбранная страница)
         '&.Mui-selected': {
-            backgroundColor: '#fff', // Белый фон, а не синий
-            borderColor: '#1677ff', // Синяя рамка
-            color: '#1677ff',       // Синий текст
+            backgroundColor: '#fff',
+            borderColor: '#1677ff',
+            color: '#1677ff',
             '&:hover': {
                 backgroundColor: '#fff',
             },

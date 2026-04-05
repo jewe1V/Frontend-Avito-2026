@@ -4,7 +4,6 @@ import {
     InputAdornment,
     ToggleButton,
     ToggleButtonGroup,
-    IconButton,
     Select,
     MenuItem,
     FormControl,
@@ -15,8 +14,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import GridViewIcon from '@mui/icons-material/GridView';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
@@ -116,17 +113,30 @@ export const AdsToolbar = () => {
                 </Select>
             </FormControl>
 
-            {/* Смена темы */}
-            <IconButton
-                onClick={toggleDarkMode}
-                sx={{
-                    backgroundColor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#f5f5f5',
-                    borderRadius: '12px',
-                    padding: '8px'
-                }}
-            >
-                {isDarkMode ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
-            </IconButton>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                    value={isDarkMode ? 'dark' : 'light'}
+                    onChange={(e) => {
+                        const newTheme = e.target.value;
+                        const shouldBeDark = newTheme === 'dark';
+                        if (shouldBeDark !== isDarkMode) {
+                            toggleDarkMode();
+                        }
+                    }}
+                    IconComponent={KeyboardArrowDownIcon}
+                    sx={{
+                        borderRadius: '12px',
+                        backgroundColor: theme.palette.mode === 'dark' ? '#2a2a2a' : '#f5f5f5',
+                        fontSize: '14px',
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: theme.palette.mode === 'dark' ? '#444' : '#eee',
+                        },
+                    }}
+                >
+                    <MenuItem value="light">Светлая</MenuItem>
+                    <MenuItem value="dark">Тёмная</MenuItem>
+                </Select>
+            </FormControl>
         </Box>
     );
 };

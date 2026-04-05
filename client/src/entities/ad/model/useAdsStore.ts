@@ -10,13 +10,13 @@ interface AdsState {
   resetFilters: () => void;
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  
+
   // Новые поля для работы с данными
   ads: AdItem[];
   total: number;
   loading: boolean;
   error: string | null;
-  
+
   // Новые действия
   fetchAds: () => Promise<void>;
 }
@@ -33,15 +33,13 @@ const defaultFilters: FilterParams = {
 
 export const useAdsStore = create<AdsState>((set, get) => ({
   filters: defaultFilters,
-  viewMode: 'list',
+  viewMode: 'grid',
   setFilters: (newFilters) => {
     const updatedFilters = { ...get().filters, ...newFilters };
-    // Сброс на первую страницу при изменении фильтра, кроме самого page
     if (Object.keys(newFilters).some(key => key !== 'page')) {
       updatedFilters.page = 1;
     }
     set({ filters: updatedFilters });
-    // Автоматически загружаем данные с новыми фильтрами через микротаск
     Promise.resolve().then(() => get().fetchAds());
   },
   setViewMode: (mode) => set({ viewMode: mode }),
@@ -52,20 +50,20 @@ export const useAdsStore = create<AdsState>((set, get) => ({
   isDarkMode: false,
   toggleDarkMode: () =>
     set((state) => ({ isDarkMode: !state.isDarkMode })),
-  
+
   ads: [],
   total: 0,
   loading: false,
   error: null,
-  
+
   fetchAds: async () => {
     const { filters } = get();
     set({ loading: true, error: null });
-    
+
     try {
       const apiParams = filterParamsToApiParams(filters);
       const response = await itemsApi.getItems(apiParams);
-      
+
       set({
         ads: response.items,
         total: response.total,

@@ -25,25 +25,18 @@ export const AdDetailsSkeleton = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Skeleton
                             variant="text"
-                            width={150}
+                            width={110}
                             height={50}
                             sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.11)' : 'rgba(0, 0, 0, 0.11)' }}
-                        />
-                        <Skeleton
-                            variant="rectangular"
-                            width={30}
-                            height={30}
-                            sx={{ borderRadius: "8px", backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.11)' : 'rgba(0, 0, 0, 0.11)' }}
                         />
                     </Box>
                 </Box>
 
-                {/* Actions Section */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mt: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mt: 2.15 }}>
                     <Skeleton
                         variant="rounded"
-                        width={120}
-                        height={36}
+                        width={168}
+                        height={40}
                         sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.11)' : 'rgba(0, 0, 0, 0.11)' }}
                     />
                     <Box sx={{ textAlign: 'right' }}>
@@ -65,11 +58,8 @@ export const AdDetailsSkeleton = () => {
 
             <Divider sx={{ mb: 4, borderColor: theme.palette.divider }} />
 
-            {/* Main Content Grid */}
-            <Grid container spacing={5}>
-                {/* Left Column - Media & Description */}
+            <Grid container spacing={"20px"}>
                 <Grid>
-                    {/* Image Placeholder */}
                     <Skeleton
                         variant="rectangular"
                         width={480}
