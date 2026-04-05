@@ -53,6 +53,8 @@ ${formDataStr}
 Рекомендуемая цена:`;
 
   try {
+    console.log('generatePrice запрос:', { model: 'llama3', prompt: prompt.substring(0, 100) });
+    
     const response = await fetch(OLLAMA_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -64,34 +66,56 @@ ${formDataStr}
       })
     });
 
-    if (!response.ok) throw new Error('API ошибка');
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
 
     const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('No response body');
+    }
+
     const decoder = new TextDecoder();
     let fullResponse = '';
-
-    if (!reader) throw new Error('No response body');
+    let buffer = '';
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      const text = decoder.decode(value);
-      const lines = text.split('\n').filter(line => line.trim());
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
 
       for (const line of lines) {
+        if (!line.trim()) continue;
+        
         try {
           const json = JSON.parse(line);
           if (json.response) {
             fullResponse += json.response;
             onStream(json.response);
           }
-        } catch {
-          // Пропускаем строки, которые не являются JSON
+        } catch (e) {
+          console.warn('Не удалось распарсить JSON строку:', line);
         }
       }
     }
 
+    // Обработаем оставшийся буфер
+    if (buffer.trim()) {
+      try {
+        const json = JSON.parse(buffer);
+        if (json.response) {
+          fullResponse += json.response;
+          onStream(json.response);
+        }
+      } catch (e) {
+        console.warn('Не удалось распарсить финальный буфер:', buffer);
+      }
+    }
+
+    console.log('generatePrice ответ:', fullResponse);
     const price = fullResponse.trim().match(/\d+/)?.[0] || '';
     return price;
   } catch (error) {
@@ -113,6 +137,8 @@ ${formDataStr}
 Описание:`;
 
   try {
+    console.log('generateDescription запрос:', { model: 'llama3', prompt: prompt.substring(0, 100) });
+    
     const response = await fetch(OLLAMA_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -124,34 +150,56 @@ ${formDataStr}
       })
     });
 
-    if (!response.ok) throw new Error('API ошибка');
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
 
     const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('No response body');
+    }
+
     const decoder = new TextDecoder();
     let fullResponse = '';
-
-    if (!reader) throw new Error('No response body');
+    let buffer = '';
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      const text = decoder.decode(value);
-      const lines = text.split('\n').filter(line => line.trim());
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
 
       for (const line of lines) {
+        if (!line.trim()) continue;
+        
         try {
           const json = JSON.parse(line);
           if (json.response) {
             fullResponse += json.response;
             onStream(json.response);
           }
-        } catch {
-          // Пропускаем строки, которые не являются JSON
+        } catch (e) {
+          console.warn('Не удалось распарсить JSON строку:', line);
         }
       }
     }
 
+    // Обработаем оставшийся буфер
+    if (buffer.trim()) {
+      try {
+        const json = JSON.parse(buffer);
+        if (json.response) {
+          fullResponse += json.response;
+          onStream(json.response);
+        }
+      } catch (e) {
+        console.warn('Не удалось распарсить финальный буфер:', buffer);
+      }
+    }
+
+    console.log('generateDescription ответ:', fullResponse);
     return fullResponse.trim();
   } catch (error) {
     console.error('Ошибка при генерации описания:', error);
