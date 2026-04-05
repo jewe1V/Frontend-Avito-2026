@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { FilterParams, AdItem } from '../../../shared/api/types.ts';
 import { itemsApi, filterParamsToApiParams } from '../../../shared/api/itemsApi.ts';
 
@@ -29,51 +30,63 @@ const defaultFilters: FilterParams = {
   limit: 20,
 };
 
-export const useAdsStore = create<AdsState>((set, get) => ({
-  filters: defaultFilters,
-  viewMode: 'grid',
-  setFilters: (newFilters) => {
-    const updatedFilters = { ...get().filters, ...newFilters };
-    if (Object.keys(newFilters).some(key => key !== 'page')) {
-      updatedFilters.page = 1;
-    }
-    set({ filters: updatedFilters });
-    Promise.resolve().then(() => get().fetchAds());
-  },
-  setViewMode: (mode) => set({ viewMode: mode }),
-  resetFilters: () => {
-    set({ filters: defaultFilters });
-    Promise.resolve().then(() => get().fetchAds());
-  },
-  isDarkMode: false,
-  toggleDarkMode: () =>
-    set((state) => ({ isDarkMode: !state.isDarkMode })),
+export const useAdsStore = create<AdsState>()(
+    persist(
+        (set, get) => ({
+          filters: defaultFilters,
+          viewMode: 'grid',
+          setFilters: (newFilters) => {
+            const updatedFilters = { ...get().filters, ...newFilters };
+            if (Object.keys(newFilters).some(key => key !== 'page')) {
+              updatedFilters.page = 1;
+            }
+            set({ filters: updatedFilters });
+            get().fetchAds();
+          },
+          setViewMode: (mode) => set({ viewMode: mode }),
+          resetFilters: () => {
+            set({ filters: defaultFilters });
+            get().fetchAds();
+          },
+          isDarkMode: false,
+          toggleDarkMode: () =>
+              set((state) => ({ isDarkMode: !state.isDarkMode })),
 
-  ads: [],
-  total: 0,
-  loading: false,
-  error: null,
+          ads: [],
+          total: 0,
+          loading: false,
+          error: null,
 
-  fetchAds: async () => {
-    const { filters } = get();
-    set({ loading: true, error: null });
+          fetchAds: async () => {
+            const { filters } = get();
+            set({ loading: true, error: null });
 
-    try {
-      const apiParams = filterParamsToApiParams(filters);
-      const response = await itemsApi.getItems(apiParams);
+            try {
+              const apiParams = filterParamsToApiParams(filters);
+              const response = await itemsApi.getItems(apiParams);
 
-      set({
-        ads: response.items,
-        total: response.total,
-        loading: false,
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch ads';
-      set({
-        error: errorMessage,
-        loading: false,
-      });
-      console.error('Error fetching ads:', error);
-    }
-  },
-}));
+              set({
+                ads: response.items,
+                total: response.total,
+                loading: false,
+              });
+            } catch (error) {
+              const errorMessage = error instanceof Error ? error.message : 'Failed to fetch ads';
+              set({
+                error: errorMessage,
+                loading: false,
+              });
+              console.error('Error fetching ads:', error);
+            }
+          },
+        }),
+        {
+          name: 'ads-storage',
+          storage: createJSONStorage(() => localStorage),
+          partialize: (state) => ({
+            isDarkMode: state.isDarkMode,
+            viewMode: state.viewMode
+          }),
+        }
+    )
+);
