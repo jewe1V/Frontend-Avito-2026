@@ -1,5 +1,3 @@
-const OLLAMA_API_URL = 'http://localhost:11434/api/generate';
-
 interface FormData {
   category: string;
   title: string;
@@ -10,7 +8,7 @@ interface FormData {
 
 const buildFormDataString = (formData: FormData): string => {
   const lines: string[] = [];
-  
+
   const fieldLabels: Record<string, string> = {
     title: 'Название товара',
     category: 'Категория',
@@ -45,7 +43,7 @@ export const generatePrice = async (
   onStream: (chunk: string) => void
 ): Promise<string> => {
   const formDataStr = buildFormDataString(formData);
-  
+
   const prompt = `Укажите рекомендуемую рыночную цену для объявления на основе предоставленной информации. Ответьте ТОЛЬКО цифрой без описания, примеры: 5000 или 25500.
 
 ${formDataStr}
@@ -54,8 +52,8 @@ ${formDataStr}
 
   try {
     console.log('generatePrice запрос:', { model: 'llama3', prompt: prompt.substring(0, 100) });
-    
-    const response = await fetch(OLLAMA_API_URL, {
+
+    const response = await fetch(import.meta.env.VITE_API_OLLAMA_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -65,10 +63,6 @@ ${formDataStr}
         temperature: 0.7
       })
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
 
     const reader = response.body?.getReader();
     if (!reader) {
@@ -89,7 +83,7 @@ ${formDataStr}
 
       for (const line of lines) {
         if (!line.trim()) continue;
-        
+
         try {
           const json = JSON.parse(line);
           if (json.response) {
@@ -116,8 +110,7 @@ ${formDataStr}
     }
 
     console.log('generatePrice ответ:', fullResponse);
-    const price = fullResponse.trim().match(/\d+/)?.[0] || '';
-    return price;
+    return fullResponse.trim().match(/\d+/)?.[0] || '';
   } catch (error) {
     console.error('Ошибка при генерации цены:', error);
     throw error;
@@ -129,7 +122,7 @@ export const generateDescription = async (
   onStream: (chunk: string) => void
 ): Promise<string> => {
   const formDataStr = buildFormDataString(formData);
-  
+
   const prompt = `Напиши краткое привлекательное описание товара для интернет-магазина на русском языке. Ответь только в 1-2 предложения, максимум 100 слов. Будь конкретен и практичен.
 
 ${formDataStr}
@@ -138,8 +131,8 @@ ${formDataStr}
 
   try {
     console.log('generateDescription запрос:', { model: 'llama3', prompt: prompt.substring(0, 100) });
-    
-    const response = await fetch(OLLAMA_API_URL, {
+
+    const response = await fetch(import.meta.env.VITE_API_OLLAMA_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -173,7 +166,7 @@ ${formDataStr}
 
       for (const line of lines) {
         if (!line.trim()) continue;
-        
+
         try {
           const json = JSON.parse(line);
           if (json.response) {

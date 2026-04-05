@@ -19,13 +19,11 @@ export const AdDetailsContent = ({ ad }: AdDetailsContentProps) => {
         }));
 
     return (
-        <Grid container spacing={5} alignItems="flex-start">
-            <Grid size={{ xs: 12, md: 7 }}>
+        <Grid container spacing={"20px"} alignItems="flex-start">
+            <Grid>
                 <Box sx={{
-                    width: '100%',
-                    maxWidth: '800px',
-                    height: 'auto',
-                    aspectRatio: '4/3',
+                    width: '480px',
+                    height: '360px',
                     backgroundColor: theme.palette.action.hover,
                     display: 'flex',
                     alignItems: 'center',

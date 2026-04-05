@@ -18,10 +18,13 @@ fastify.use((_, __, next) =>
   new Promise(res => setTimeout(res, 300 + Math.random() * 700)).then(next),
 );
 
-// Настройка CORS
 fastify.use((_, reply, next) => {
   reply.setHeader('Access-Control-Allow-Origin', '*');
   next();
+});
+
+fastify.options('/items/:id', (request, reply) => {
+  reply.status(200).send();
 });
 
 interface ItemGetRequest extends Fastify.RequestGenericInterface {
