@@ -1,9 +1,12 @@
 import { useAdEditForm } from '../model/useAdEditForm';
 import { AdEditView } from './AdEditView';
+import {useEffect} from 'react';
 
 export const AdEditPage = () => {
   const form = useAdEditForm();
-
+  useEffect(() => {
+    document.title = "Редактирование объявление";
+  }, []);
   return (
     <AdEditView
       formData={form.formData}

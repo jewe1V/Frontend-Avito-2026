@@ -6,9 +6,7 @@ import { AdCardRow } from '../../AdsAdItems/ui/AdCardRow';
 import { AdCardGrid } from '../../AdsAdItems/ui/AdCardGrid';
 import {AdCardGridSkeleton} from "../../AdsAdItems/ui/AdCardGridSkeleton.tsx";
 import {AdCardRowSkeleton} from "../../AdsAdItems/ui/AdCardRowSkeleton.tsx";
-import {AdsPagination} from "../../AdsPagination/ui/AdsPagination.ts";
-
-
+import {AdsPagination} from "../../AdsPagination";
 
 export const AdsList = () => {
     const viewMode = useAdsStore((state) => state.viewMode);

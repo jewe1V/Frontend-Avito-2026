@@ -1,12 +1,7 @@
 import { Box, Card, Typography, Chip, useTheme } from '@mui/material';
 import placeholderImage from '../../../shared/assets/placeholder.png';
 import type { AdItem } from '../../../shared/api/types';
-
-const categoryLabels: Record<string, string> = {
-    auto: 'Авто',
-    real_estate: 'Недвижимость',
-    electronics: 'Электроника',
-};
+import {categoryLabels} from "../../../consts.ts";
 
 export const AdCardGrid = ({ item }: { item: AdItem }) => {
     const theme = useTheme();
