@@ -79,8 +79,8 @@ function formatOptionLabel(value: string): string {
 }
 
 // Компонент для лейблов полей формы
-const CustomLabel = ({ children, required }: { children: React.ReactNode, required?: boolean }) => (
-    <Typography sx={{ fontSize: '14px', fontWeight: 600, color: '#2b2b2b', mb: 1, display: 'flex', alignItems: 'center' }}>
+const CustomLabel = ({ children, required, weight = 400 }: { children: React.ReactNode, required?: boolean, weight?: number }) => (
+    <Typography sx={{ fontSize: '14px', fontWeight: weight, color: '#2b2b2b', mb: 1, display: 'flex', alignItems: 'center' }}>
         {required && <span style={{ color: '#ff4d4f', marginRight: '4px', fontSize: '14px' }}>*</span>}
         {children}
     </Typography>
@@ -295,7 +295,7 @@ export const AdEditPage = () => {
 
                     {/* Категория */}
                     <Box sx={{mb: 2,}}>
-                        <CustomLabel>Категория</CustomLabel>
+                        <CustomLabel weight={600}>Категория</CustomLabel>
                         <Select
                             fullWidth
                             size="small"
@@ -314,7 +314,7 @@ export const AdEditPage = () => {
 
                     {/* Название */}
                     <Box sx={{mt: -1,}}>
-                        <CustomLabel required>Название</CustomLabel>
+                        <CustomLabel required weight={600}>Название</CustomLabel>
                         <OutlinedInput
                             fullWidth
                             size="small"
@@ -328,7 +328,7 @@ export const AdEditPage = () => {
                     <Divider sx={{ my: 2, borderColor: '#f2f2f2' }} />
                     {/* Цена */}
                     <Box sx={{mt: -1,}}>
-                        <CustomLabel required>Цена</CustomLabel>
+                        <CustomLabel required weight={600}>Цена</CustomLabel>
                         <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                             <OutlinedInput
                                 fullWidth
