@@ -1,10 +1,9 @@
 import {Box, Container, Typography} from '@mui/material';
 import { useEffect } from 'react';
 import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
-
 import { Sidebar } from '../../../widgets/AdsFilter/ui/Sidebar';
 import { AdsToolbar } from '../../../widgets/AdsToolbar/ui/AdsToolbar';
-import { AdsList } from '../../../widgets/AdsList/ui/AdsList';
+import { AdsList } from '../../../widgets/AdsList/index.ts';
 
 export const AdsPage = () => {
     const total = useAdsStore((state) => state.total);

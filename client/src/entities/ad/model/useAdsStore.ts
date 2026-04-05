@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { FilterParams, AdItem } from '../../../shared/api/types';
-import { itemsApi, filterParamsToApiParams } from '../../../shared/api/itemsApi';
+import type { FilterParams, AdItem } from '../../../shared/api/types.ts';
+import { itemsApi, filterParamsToApiParams } from '../../../shared/api/itemsApi.ts';
 
 interface AdsState {
   filters: FilterParams;
@@ -11,13 +11,11 @@ interface AdsState {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 
-  // Новые поля для работы с данными
   ads: AdItem[];
   total: number;
   loading: boolean;
   error: string | null;
 
-  // Новые действия
   fetchAds: () => Promise<void>;
 }
 

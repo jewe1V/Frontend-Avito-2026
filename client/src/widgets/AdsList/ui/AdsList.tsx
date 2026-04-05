@@ -1,44 +1,14 @@
-import { Stack, Box, CircularProgress, Typography, Pagination, styled } from '@mui/material';
+import { Stack, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAdsStore } from '../../../entities/ad/model/useAdsStore';
-import { AdCardRow } from '../../../entities/ad/ui/AdCardRow';
-import { AdCardGrid } from '../../../entities/ad/ui/AdCardGrid';
+import { AdCardRow } from '../../AdsAdItems/ui/AdCardRow';
+import { AdCardGrid } from '../../AdsAdItems/ui/AdCardGrid';
+import {AdCardGridSkeleton} from "../../AdsAdItems/ui/AdCardGridSkeleton.tsx";
+import {AdCardRowSkeleton} from "../../AdsAdItems/ui/AdCardRowSkeleton.tsx";
+import {AdsPagination} from "../../AdsPagination/ui/AdsPagination.ts";
 
-const StyledPagination = styled(Pagination)(() => ({
-    '& .MuiPaginationItem-root': {
-        borderRadius: '8px',
-        border: '1px solid #d9d9d9',
-        backgroundColor: '#fff',
-        color: '#333',
-        margin: '0 4px',
-        fontWeight: 500,
-        fontSize: '16px',
-        height: '40px',
-        minWidth: '40px',
-        '&:hover': {
-            backgroundColor: '#f5f5f5',
-            borderColor: '#1677ff',
-            color: '#1677ff',
-        },
-        '&.Mui-selected': {
-            backgroundColor: '#fff',
-            borderColor: '#1677ff',
-            color: '#1677ff',
-            '&:hover': {
-                backgroundColor: '#fff',
-            },
-        },
-        // Иконки < и >
-        '&.MuiPaginationItem-previousNext': {
-            color: '#999',
-            '&:hover': {
-                borderColor: '#1677ff',
-                color: '#1677ff',
-            }
-        },
-    },
-}));
+
 
 export const AdsList = () => {
     const viewMode = useAdsStore((state) => state.viewMode);
@@ -63,16 +33,8 @@ export const AdsList = () => {
         setFilters({ page });
     };
 
-    const limit = filters.limit || 20;
+    const limit = filters.limit || 10;
     const totalPages = Math.ceil(total / limit);
-
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4, height: '100%' }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
 
     if (error) {
         return (
@@ -82,19 +44,56 @@ export const AdsList = () => {
         );
     }
 
-    if (ads.length === 0) {
-        return (
-            <Typography color="text.secondary" sx={{ py: 2 }}>
-                Объявления не найдены
-            </Typography>
-        );
-    }
-
-    // Функция для рендера самого списка (чтобы не дублировать код обертки)
     const renderContent = () => {
+        if (loading) {
+            const skeletons = Array.from(new Array(limit));
+
+            if (viewMode === 'grid') {
+                return (
+                    <Box sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                            xs: '1fr',
+                            sm: 'repeat(2, 1fr)',
+                            md: 'repeat(3, 1fr)',
+                            lg: 'repeat(4, 1fr)',
+                            xl: 'repeat(5, 1fr)'
+                        },
+                        gap: 2
+                    }}>
+                        {skeletons.map((_, index) => <AdCardGridSkeleton key={index} />)}
+                    </Box>
+                );
+            }
+
+            return (
+                <Stack spacing={2}>
+                    {skeletons.map((_, index) => <AdCardRowSkeleton key={index} />)}
+                </Stack>
+            );
+        }
+
+        if (ads.length === 0) {
+            return (
+                <Typography color="text.secondary" sx={{ py: 2 }}>
+                    Объявления не найдены
+                </Typography>
+            );
+        }
+
         if (viewMode === 'grid') {
             return (
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 2 }}>
+                <Box sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                        xs: '1fr',
+                        sm: 'repeat(2, 1fr)',
+                        md: 'repeat(3, 1fr)',
+                        lg: 'repeat(4, 1fr)',
+                        xl: 'repeat(5, 1fr)'
+                    },
+                    gap: 2
+                }}>
                     {ads.map((item) => (
                         <Box key={item.id} onClick={() => handleCardClick(item.id)} sx={{ cursor: 'pointer', height: '100%' }}>
                             <AdCardGrid item={item} />
@@ -117,8 +116,6 @@ export const AdsList = () => {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-
-            {/* 1. Блок со скроллом */}
             <Box sx={{
                 flexGrow: 1,
                 overflowY: 'auto',
@@ -131,10 +128,9 @@ export const AdsList = () => {
                 {renderContent()}
             </Box>
 
-            {/* 2. Фиксированная пагинация внизу */}
             {totalPages > 1 && (
                 <Box sx={{ flexShrink: 0, display: 'flex', justifyContent: 'flex-start', pt: 1, pb: 2 }}>
-                    <StyledPagination
+                    <AdsPagination
                         count={totalPages}
                         page={filters.page || 1}
                         onChange={handlePageChange}
@@ -143,7 +139,6 @@ export const AdsList = () => {
                     />
                 </Box>
             )}
-
         </Box>
     );
 };
