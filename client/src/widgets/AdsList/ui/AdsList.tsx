@@ -10,13 +10,13 @@ import {AdsPagination} from "../../AdsPagination";
 
 export const AdsList = () => {
     const viewMode = useAdsStore((state) => state.viewMode);
-    const ads = useAdsStore((state) => state.ads);
+    const ads = useAdsStore((state) => state.ads) || [];
     const loading = useAdsStore((state) => state.loading);
     const error = useAdsStore((state) => state.error);
     const fetchAds = useAdsStore((state) => state.fetchAds);
     const filters = useAdsStore((state) => state.filters);
     const setFilters = useAdsStore((state) => state.setFilters);
-    const total = useAdsStore((state) => state.total);
+    const total = useAdsStore((state) => state.total) || 0;
     const navigate = useNavigate();
 
     useEffect(() => {

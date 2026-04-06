@@ -8,11 +8,6 @@ dist
 .next
 .parcel-cache
 
-.env
-.env.local
-.env.development
-.env.production
-
 .git
 .gitignore
 
